@@ -23,7 +23,7 @@ The Simple Social Engineering Awareness Tool is an interactive web-based quiz de
 
 ## Example Screenshot
 
-![Simple Social Engineering Awareness Tool](https://github.com/user-attachments/assets/fbf08504-ff90-42c1-a2d4-22edbadf9dab)
+![Simple Social Engineering Awareness Tool](https://github.com/user-attachments/assets/06fa883c-40d4-47a6-a9b6-df1e48a38df0)
 
 ## Conclusion  
 The Simple Social Engineering Awareness Tool is an interactive educational quiz designed to raise awareness about common social engineering tactics. By presenting real-world scenarios and providing immediate feedback, the tool helps users recognize potential social engineering attacks such as phishing, pretexting, and baiting. It promotes better security hygiene by educating users on how to identify and respond to suspicious communications, thus strengthening the human aspect of cybersecurity defenses.
