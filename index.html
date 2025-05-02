@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Social Engineering Awareness Tool</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    background: rgba(0,0,0,0.6);
+    width: 90%;
+    max-width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 20px 30px;
+    box-sizing: border-box;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  .scenario {
+    background: #222;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  button.option-btn {
+    background: #444;
+    color: #fff;
+    border: none;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.3s ease;
+  }
+  button.option-btn:hover {
+    background: #667eea;
+  }
+  .feedback {
+    background: #333;
+    border-radius: 8px;
+    padding: 15px;
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+  .summary {
+    text-align: center;
+  }
+  .summary h2 {
+    margin-bottom: 1rem;
+  }
+  button#next-btn, button#restart-btn {
+    background: #76b852;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  button#next-btn:hover, button#restart-btn:hover {
+    background: #5a943c;
+  }
+  footer {
+    margin-top: auto;
+    padding: 10px;
+    font-size: 0.9rem;
+    color: #ccc;
+    text-align: center;
+  }
+  @media (max-width: 480px) {
+    .container {
+      padding: 15px 20px;
+    }
+    .scenario {
+      font-size: 1rem;
+    }
+    button.option-btn {
+      font-size: 0.9rem;
+      padding: 10px 12px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container" role="main" aria-live="polite">
+    <h1>Social Engineering Awareness Quiz</h1>
+    <div id="quiz-container">
+      <!-- Dynamic content will be injected here -->
+    </div>
+    <div style="text-align:center;">
+      <button id="next-btn" style="display:none;">Next</button>
+      <button id="restart-btn" style="display:none;">Restart Quiz</button>
+    </div>
+  </div>
+  <footer>
+    &copy; 2024 Social Engineering Awareness Tool | For educational use only
+  </footer>
+<script>
+  const scenarios = [
+    {
+      text: `You receive an email from your bank asking to click a link to verify your account details urgently.`,
+      options: [
+        { text: "Click the link and enter your details.", suspicious: true, explanation: "Banks rarely ask for personal info via email links. This could be a phishing attempt." },
+        { text: "Delete the email immediately.", suspicious: false, explanation: "While cautious, better to verify with bank via official channels than just delete." },
+        { text: "Call bank’s official phone number to confirm.", suspicious: false, explanation: "This is a good practice to confirm legitimacy." }
+      ],
+      correctIndexes: [1, 2]
+    },
+    {
+      text: `An unknown person calls claiming to be IT support, asking for your system password to fix an urgent issue.`,
+      options: [
+        { text: "Give them your password so they can help.", suspicious: true, explanation: "Legitimate IT support never asks for your password directly." },
+        { text: "Offer to assist but never share password.", suspicious: false, explanation: "Protecting your password is important; IT usually uses other methods." },
+        { text: "Report the call to your supervisor.", suspicious: false, explanation: "Reporting suspicious calls helps prevent social engineering attacks." }
+      ],
+      correctIndexes: [1, 2]
+    },
+    {
+      text: `You find a USB stick in a parking lot and plug it into your work computer.`,
+      options: [
+        { text: "Scan the USB with antivirus before opening files.", suspicious: false, explanation: "Safe approach before accessing unknown media." },
+        { text: "Use it right away to see what's on it.", suspicious: true, explanation: "Plugging unknown USBs can install malware." },
+        { text: "Hand it to your IT department for safe handling.", suspicious: false, explanation: "Best to let experts analyze unknown devices." }
+      ],
+      correctIndexes: [0, 2]
+    },
+    {
+      text: `You receive a friendly message on social media from someone claiming to work at your company and asking about a confidential project.`,
+      options: [
+        { text: "Share all project details as requested.", suspicious: true, explanation: "Avoid sharing confidential info without verifying identity." },
+        { text: "Verify the person’s profile and contact through official channels.", suspicious: false, explanation: "Always verify before sharing confidential info." },
+        { text: "Ignore and report suspicious requests.", suspicious: false, explanation: "Reporting potential social engineering attempts is important." }
+      ],
+      correctIndexes: [1, 2]
+    },
+    {
+      text: `You receive an email with a link to a job offer that requires immediate payment for training.`,
+      options: [
+        { text: "Pay immediately to secure the job.", suspicious: true, explanation: "Legitimate jobs don't require payment upfront." },
+        { text: "Research the company and offer thoroughly.", suspicious: false, explanation: "Research helps avoid scams." },
+        { text: "Report the scam to relevant authorities.", suspicious: false, explanation: "Reporting scams protects others." }
+      ],
+      correctIndexes: [1, 2]
+    }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+  const quizContainer = document.getElementById('quiz-container');
+  const nextBtn = document.getElementById('next-btn');
+  const restartBtn = document.getElementById('restart-btn');
+
+  function showScenario(index) {
+    const scenario = scenarios[index];
+    quizContainer.innerHTML = `
+      <div class="scenario" id="scenario-text">${scenario.text}</div>
+      <div class="options" role="radiogroup" aria-labelledby="scenario-text">
+        ${scenario.options.map((opt, i) =>
+          `<button class="option-btn" role="radio" aria-checked="false" tabindex="0" data-index="${i}">${opt.text}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+    `;
+    nextBtn.style.display = 'none';
+    restartBtn.style.display = 'none';
+
+    const optionButtons = quizContainer.querySelectorAll('.option-btn');
+    optionButtons.forEach(button => {
+      button.addEventListener('click', () => onOptionSelected(button, scenario));
+    });
+  }
+
+  function onOptionSelected(button, scenario) {
+    // Disable all buttons
+    const optionButtons = quizContainer.querySelectorAll('.option-btn');
+    optionButtons.forEach(btn => {
+      btn.disabled = true;
+      btn.setAttribute('aria-checked', 'false');
+    });
+    button.setAttribute('aria-checked', 'true');
+    const selectedIndex = parseInt(button.getAttribute('data-index'));
+    const feedbackDiv = document.getElementById('feedback');
+
+    const selectedOption = scenario.options[selectedIndex];
+    feedbackDiv.innerHTML = selectedOption.explanation;
+
+    // Check if the selected option was correct
+    if (scenario.correctIndexes.includes(selectedIndex)) {
+      score++;
+    }
+
+    nextBtn.style.display = 'inline-block';
+    nextBtn.focus();
+  }
+
+  function showSummary() {
+    quizContainer.innerHTML = `
+      <div class="summary">
+        <h2>Quiz Completed!</h2>
+        <p>Your score: ${score} out of ${scenarios.length}</p>
+        <p>Social engineering attacks rely on human trust and error. Stay vigilant!</p>
+      </div>
+    `;
+    nextBtn.style.display = 'none';
+    restartBtn.style.display = 'inline-block';
+    restartBtn.focus();
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex++;
+    if (currentIndex < scenarios.length) {
+      showScenario(currentIndex);
+    } else {
+      showSummary();
+    }
+  });
+
+  restartBtn.addEventListener('click', () => {
+    currentIndex = 0;
+    score = 0;
+    showScenario(currentIndex);
+  });
+
+  // Start the quiz
+  showScenario(currentIndex);
+</script>
+</body>
+</html>
